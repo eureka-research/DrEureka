@@ -2,7 +2,7 @@
 
 <div align="center">
 
-[[Website]]( https://eureka-research.github.io/dr-eureka/)
+[[Website]](https://eureka-research.github.io/dr-eureka/)
 [[arXiv (coming soon!)]](https://arxiv.org/abs/2310.12931)
 [[PDF]](https://eureka-research.github.io/dr-eureka/assets/eureka_paper.pdf)
 
@@ -18,9 +18,12 @@
 [![GitHub license](https://img.shields.io/github/license/eureka-research/Eureka)](https://github.com/eureka-research/Eureka/blob/main/LICENSE)
 ______________________________________________________________________
 
-<!-- https://github.com/eureka-research/Eureka/assets/21993118/1abb960d-321a-4de9-b311-113b5fc53d4a
 
-![](images/eureka.png) -->
+
+https://github.com/eureka-research/DrEureka/assets/21993118/61b25aa1-e39d-4e13-b6c3-2a58e3b23492
+
+
+https://github.com/eureka-research/DrEureka/assets/21993118/47b1b4a2-0ba8-488b-8ae0-2fdf9865bbbe
 </div>
 
 Transferring policies learned in simulation to the real world is a promising strategy for acquiring robot skills at scale. However, sim-to-real approaches typically rely on manual design and tuning of the task reward function as well as the simulation physics parameters, rendering the process slow and human-labor intensive. In this paper, we investigate using Large Language Models (LLMs) to automate and accelerate sim-to-real design. Our LLM-guided sim-to-real approach requires only the physics simulation for the target task and automatically constructs suitable reward functions and domain randomization distributions to support real-world transfer. We first demonstrate our approach can discover sim-to-real configurations that are competitive with existing human-designed ones on quadruped locomotion and dexterous manipulation tasks. Then, we showcase that our approach is capable of solving novel robot tasks, such as quadruped balancing and walking atop a yoga ball, without iterative manual design.
