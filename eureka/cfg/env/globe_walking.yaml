@@ -1,0 +1,11 @@
+task: Globe Walking
+env_name: globe_walking
+description: To make the go1 quadruped balance on the top of the ball. The quadruped should maintain a z-position of 2 * ball_radius or higher. Please keep in mind that the policy learned using your reward terms will be deployed on a robot in the real world. As such, you should prioritize safety, robustness, and feasibility over performance. Please generate reward terms that penalize actions that are unsafe or infeasible. Please also penalize jittery or fast actions that may burn out the motors. Also, remember to keep the scaling of your regularization terms small. If you choose to use env.torques, please keep in mind that this value will be large, so your scaling for this term should be near 0.00001.
+
+train_script: scripts/train.py
+reward_template_file: go1_gym/rewards/eureka_reward_template.py
+reward_output_file: go1_gym/rewards/eureka_reward.py
+
+train_iterations: 1000
+success_keyword: running
+failure_keyword: Traceback

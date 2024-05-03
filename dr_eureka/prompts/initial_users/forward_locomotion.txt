@@ -1,0 +1,16 @@
+The task is: {task_description}
+The robot will be trained in simulation and then deployed in the real world.
+Our parameters and valid ranges are the following:
+    friction_range = [0.0, 10.0]
+    restitution_range = [0.0, 1.0]
+    added_mass_range = [-1.0, 1.0]
+    com_displacement_range = [-5.0, 10.0]
+    motor_strength_range = [0.5, 2.0]
+    Kp_factor_range = [0.5, 2.0]
+    Kd_factor_range = [0.0, 2.0]
+    dof_stiffness_range = [0.0, 1.0]
+    dof_damping_range = [0.0, 0.5]
+    dof_friction_range = [0.0, 0.1]
+    dof_armature_range = [0.0, 0.01]    (This is the range of values added onto the diagonal of the joint inertia matrix.)
+    push_vel_xy_range = [0.0, 10.0]    (This is the range of magnitudes of a vector added onto the robot's xy velocity.)
+    gravity_range = [-10.0, 10.0]    (This is the range of values added onto each dimension of [0.0, 0.0, -9.8]. For example, [0.0, 0.0] would keep gravity constant.)

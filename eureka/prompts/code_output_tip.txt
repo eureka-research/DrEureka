@@ -1,0 +1,8 @@
+The output of the reward function should consist of two items:
+    (1) the total reward (tensor with reward per environment)
+    (2) a dictionary of each individual reward component (tensor with reward component per environment)
+The code output should be formatted as a python code string: "```python ... ```".
+
+Some helpful tips for writing the reward function code:
+    (1) Make sure the type of each input variable is correctly specified; a float input variable should not be specified as torch.Tensor
+    (2) Most importantly, the reward code's input variables must contain only attributes of the provided environment class definition (namely, variables that have prefix self.). Under no circumstance can you introduce new input variables.

@@ -1,0 +1,19 @@
+The task is to train a quadruped robot to balance on a yoga ball for as long as possible.
+The robot will be trained in simulation and then deployed in the real world. Please note that our simulation environment models the ball as a solid rigid object, so the robot will not be able to deform the ball in any way. However, our real yoga ball is hollow, bouncy, and deformable, so the robot will need to adapt to this difference. Please keep this in mind when designing your domain randomization.
+Our parameters and valid ranges are the following:
+    robot_friction_range = [0.1, 1.0]
+    robot_restitution_range = [0.0, 1.0]
+    robot_payload_mass_range = [-1.0, 5.0]
+    robot_com_displacement_range = [-0.1, 0.1]
+    robot_motor_strength_range = [0.9, 1.1]
+    robot_motor_offset_range = [-0.01, 0.1]
+    ball_mass_range = [0.5, 5.0]
+    ball_friction_range = [0.1, 3.0]
+    ball_restitution_range = [0.0, 1.0]
+    ball_drag_range = [0.0, 1.0]
+    terrain_ground_friction_range = [0.0, 1.0]
+    terrain_ground_restitution_range = [0.0, 1.0]
+    terrain_tile_roughness_range = [0.0, 0.1]
+    robot_push_vel_range = [0.0, 0.5]
+    ball_push_vel_range = [0.0, 0.5]
+    gravity_range = [-0.5, 0.5]

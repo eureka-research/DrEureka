@@ -1,0 +1,14 @@
+task: Forward Locomotion
+env_name: forward_locomotion
+description: To train a quadruped robot to run on a variety of terrains indoor and outdoor. The goal of the robot is to run forward at 2.0 m/s while remaining steady and safe in the real world.
+
+train_script: scripts/train.py
+dr_template_file: go1_gym/envs/base/legged_robot_config_template.py
+dr_output_file: go1_gym/envs/base/legged_robot_config.py
+
+train_iterations: 1000
+success_keyword: running
+failure_keyword: Traceback
+
+play_script: scripts/play.py
+play_iterations: 100

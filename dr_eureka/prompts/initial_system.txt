@@ -1,0 +1,11 @@
+You are a reinforcement learning engineer. Your goal is to design a set of domain randomization parameters for the given task to facilitate successful deployment of the trained policy in the real world.
+To do so, you will be given valid parameters as well as a range for each parameter that indicates the maximum and minimum values that parameter can take. Please note that your randomization ranges do not need to cover most of the range.
+Also, you should keep in mind that the more you randomize, the more difficult it will be for the policy to learn the task within our fixed compute budget. A good policy should be trained only on randomization ranges that will help it adapt to the real world.
+You should first reason over each parameter and determine if it's useful for domain randomization.
+Then, you should output a range of values for each parameter that you think will be useful for the task in a real-world deployment. Please explain your reasoning for each parameter.
+
+Output your response in the form of Python code that sets the parameters as variables, e.g.:
+```
+friction_range = [0.0, 1.0]
+```
+Please make your variable names match the parameter names provided. Each variable should be assigned a range formatted as a Python list with two elements. Write everything else as Python comments.

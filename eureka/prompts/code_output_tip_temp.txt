@@ -1,0 +1,12 @@
+The output of the reward function should be only your reward value.
+The code output should be formatted as a python code string: "```python ... ```".
+
+Some helpful tips for writing the reward function code:
+    (1) You may find it helpful to normalize the reward to a fixed range by applying transformations like torch.exp to the overall reward or its components
+    (2) If you choose to transform a reward component, then you must also introduce a temperature parameter inside the transformation function; this parameter must be a named variable in the reward function and it must not be an input variable. Each transformed reward component should have its own temperature variable
+    (3) Most importantly, the reward code's must only use attributes of the provided environment object (namely, variables that have prefix env.). Under no circumstance can you introduce new input variables.
+    (4) You may use functions from torch and numpy as well as the following: quat_mul, quat_apply, quat_rotate, quat_rotate_inverse, quat_conjugate, quat_unit, quat_from_angle_axis, and quat_from_euler_xyz (provided by isaacgym.torch_utils). No other functions will be available.
+    (5) Make sure any new tensor or variable you introduce is on the same device as the environment tensors.
+    (6) The reward terms for desired behavior should be positive. Do not write a term that negatively penalizes the policy for a lack of desired behavior. We do not want the total reward to be negative.
+    (7) The reward terms that penalize undesirable behavior should be negative. You should not provide a positive reward for avoiding undesirable behavior, but instead you should penalize the policy when it does execute undesirable behavior.
+    (8) When using the exponential function, make sure that your value is bounded. If it's not, please clamp it to provide an upper or lower bound.

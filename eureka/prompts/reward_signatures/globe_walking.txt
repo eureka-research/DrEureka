@@ -1,0 +1,10 @@
+The reward function signature is:
+
+def _reward_{term_name}(self):
+    env = self.env  # Do not skip this line. Afterwards, use env.{parameter_name} to access parameters of the environment.
+    ...
+    return {reward_term_scale} * reward
+
+where {term_name} is the name of the reward term and env is the environment object with relevant variables. Your returned reward should be a 1D tensor of shape (env.num_envs) that contains a value for each environment instance. You must strictly follow this template.
+
+In your response, please first list out the reward terms are you planning to implement. Then, write one separate function per reward term. Do not write only one function that computes and sums all reward terms, and do not write a reward total function that calls all your reward term functions. Also, please do not forget to scale your reward terms by their relative importance before returning them from their functions. The cumulative reward we use for training will be a sum of the return values of all your reward term functions.

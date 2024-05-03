@@ -1,0 +1,12 @@
+task: Forward Locomotion
+env_name: forward_locomotion
+description: To make the go1 quadruped run forward with a velocity of exactly 2.0 m/s in the positive x direction of the global coordinate frame. The policy will be trained in simulation and deployed in the real world, so the policy should be as steady and stable as possible with minimal action rate. Specifically, as it's running, the torso should remain near a z position of 0.34, and the orientation should be perpendicular to gravity. Also, the legs should move smoothly and avoid the DOF limits.
+# Note: 0.34 is from go1_config.py (base_height_target)
+
+train_script: scripts/train.py
+reward_template_file: go1_gym/rewards/eureka_reward_template.py
+reward_output_file: go1_gym/rewards/eureka_reward.py
+
+train_iterations: 1000
+success_keyword: running
+failure_keyword: Traceback

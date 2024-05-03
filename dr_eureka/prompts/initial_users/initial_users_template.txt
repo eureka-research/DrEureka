@@ -1,0 +1,4 @@
+The task is: {task_description}
+The robot will be trained in simulation and then deployed in the real world.
+Our parameters and valid ranges are the following:
+{RAPP_bounds}

@@ -1,0 +1,14 @@
+task: Globe Walking
+env_name: globe_walking
+description: To train a quadruped robot to balance on a yoga ball for as long as possible. Please note that our simulation environment models the ball as a solid rigid object, so the robot will not be able to deform the ball in any way. However, our real yoga ball is hollow, bouncy, and deformable, so the robot will need to adapt to this difference. Please keep this in mind when designing your domain randomization.
+
+train_script: scripts/train.py
+dr_template_file: go1_gym/envs/base/legged_robot_config_template.py
+dr_output_file: go1_gym/envs/base/legged_robot_config.py
+
+train_iterations: 1000
+success_keyword: running
+failure_keyword: Traceback
+
+play_script: scripts/play.py
+play_iterations: 200

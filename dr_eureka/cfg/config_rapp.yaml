@@ -1,0 +1,10 @@
+defaults:
+  - _self_
+  - env: forward_locomotion
+  - override hydra/launcher: local
+  - override hydra/output: local
+
+hydra:
+  output_subdir: null
+
+run_path: ""

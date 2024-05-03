@@ -1,0 +1,22 @@
+defaults:
+  - _self_
+  - env: forward_locomotion
+  - override hydra/launcher: local
+  - override hydra/output: local
+
+hydra:
+  job:
+    chdir: True
+
+# LLM parameters
+model: gpt-4-0125-preview
+temperature: 1.0
+
+# Eureka parameters
+iteration: 5                # how many iterations of Eureka to run
+sample: 16                  # number of Eureka samples to generate per iteration
+
+# Weights and Biases
+use_wandb: False            # whether to use wandb for logging
+wandb_username: ""          # wandb username if logging with wandb
+wandb_project: ""           # wandb project if logging with wandb
