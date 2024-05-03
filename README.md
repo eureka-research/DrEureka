@@ -4,7 +4,7 @@
 
 [[Website]](https://eureka-research.github.io/dr-eureka/)
 [[arXiv (coming soon!)]](https://arxiv.org/abs/2310.12931)
-[[PDF]](https://eureka-research.github.io/dr-eureka/assets/eureka_paper.pdf)
+[[PDF]](https://eureka-research.github.io/dr-eureka/assets/dreureka-paper.pdf)
 
 [Yecheng Jason Ma<sup>1*</sup>](https://jasonma2016.github.io/), [William Liang<sup>1*</sup>](https://willjhliang.github.io), [Hung-Ju Wang<sup>1</sup>](https://www.linkedin.com/in/hungju-wang), [Sam Wang<sup>1</sup>](https://www.linkedin.com/in/sam-wang-penn),<br>
 [Yuke Zhu<sup>2,3</sup>](https://www.cs.utexas.edu/~yukez/), [Linxi "Jim" Fan<sup>2</sup>](https://jimfan.me/), [Osbert Bastani<sup>1</sup>](https://obastani.github.io/), [Dinesh Jayaraman<sup>1</sup>](https://www.seas.upenn.edu/~dineshj/)
