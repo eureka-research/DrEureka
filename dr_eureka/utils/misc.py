@@ -33,13 +33,13 @@ def block_until_training(rl_filepath, success_keyword, failure_keyword, log_stat
     # Ensure that the RL training has started before moving on
     while True:
         rl_log = file_to_string(rl_filepath)
-        if "running" in rl_log or "Traceback" in rl_log:
-            if log_status and "running" in rl_log:
+        if success_keyword in rl_log or failure_keyword in rl_log:
+            if log_status and success_keyword in rl_log:
                 if iter_num is not None:
                     logging.info(f"Iteration {iter_num}: Code Run {response_id} successfully training!")
                 else:
                     logging.info(f"Code Run {response_id} successfully training!")
-            if log_status and "Traceback" in rl_log:
+            if log_status and failure_keyword in rl_log:
                 if iter_num is not None:
                     logging.info(f"Iteration {iter_num}: Code Run {response_id} execution error!")
                 else:
