@@ -5,7 +5,7 @@ from collections import deque
 
 import torch
 from ml_logger import logger
-from params_proto.neo_proto import PrefixProto
+from params_proto import PrefixProto
 import os
 import copy
 
