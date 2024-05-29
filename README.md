@@ -166,5 +166,6 @@ If you find our work useful, please consider citing us!
     title   = {DrEureka: Language Model Guided Sim-To-Real Transfer},
     author  = {Yecheng Jason Ma and William Liang and Hungju Wang and Sam Wang and Yuke Zhu and Linxi Fan and Osbert Bastani and Dinesh Jayaraman}
     year    = {2024},
+	booktitle ={Robotics: Science and Systems (RSS)},
 }
 ```
