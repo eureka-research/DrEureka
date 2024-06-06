@@ -17,7 +17,7 @@ temperature: 1.0
 # sample: 16 # number of Eureka samples to generate per iteration
 
 iteration: 5 # how many iterations of Eureka to run
-sample: 16 # number of Eureka samples to generate per iteration
+sample: 8 # number of Eureka samples to generate per iteration
 
 # Weights and Biases
 use_wandb: False # whether to use wandb for logging

@@ -12,45 +12,59 @@ class EurekaReward():
 
     def compute_reward(self):
         env = self.env  # Do not skip this line. Afterwards, use env.{parameter_name} to access parameters of the environment.
-        
+        import torch
+    
         # Desired forward velocity
         desired_velocity = 2.0
     
-        # Reward for maintaining forward velocity
-        forward_velocity_error = torch.abs(env.root_states[:, 7] - desired_velocity)
-        forward_velocity_reward = torch.exp(-forward_velocity_error)
+        # Calculate components of the reward
+        # 1. Forward velocity reward
+        forward_velocity = env.root_states[:, 7]  # X-direction linear velocity
+        forward_velocity_reward = -torch.abs(forward_velocity - desired_velocity)
     
-        # Reward for maintaining torso height near 0.34
-        torso_height_target = 0.34
-        height_error = torch.abs(env.root_states[:, 2] - torso_height_target)
-        height_reward = torch.exp(-height_error)
+        # 2. Stability reward (Height and orientation control)
+        target_z_pos = 0.34
+        base_height = env.root_states[:, 2]  # Z position of the torso
+        height_reward = -torch.abs(base_height - target_z_pos)
     
-        # Reward for maintaining orientation perpendicular to gravity
-        orientation_reward = torch.exp(-torch.abs(env.projected_gravity[:, 2] - 1.0))
+        orientation_reward = -torch.abs(env.projected_gravity[:, 2] - 1.0)  # Should be close to 1 if perpendicular to gravity
     
-        # Reward for smoothness in actions
-        action_rate = torch.sum(torch.abs(env.actions - env.last_actions), dim=1)
-        action_smoothness_reward = torch.exp(-action_rate)
+        # 3. Penalize high action rate for smoothness
+        action_smoothness_reward = -torch.sum(torch.abs(env.actions - env.last_actions), dim=1)
     
-        # Reward for avoiding DOF limits
-        dof_pos_limits_lower = env.dof_pos_limits[:, 0].unsqueeze(0).expand_as(env.dof_pos)
-        dof_pos_limits_upper = env.dof_pos_limits[:, 1].unsqueeze(0).expand_as(env.dof_pos)
-        dof_pos_penalty = torch.sum(torch.clamp(env.dof_pos - dof_pos_limits_upper, min=0) ** 2 + torch.clamp(dof_pos_limits_lower - env.dof_pos, min=0) ** 2, dim=1)
-        dof_pos_limit_reward = torch.exp(-dof_pos_penalty)
+        # 4. Penalize DOF limit violations for joint position and velocity
+        dof_pos_penalty = torch.sum(
+            (env.dof_pos - env.dof_pos_limits[:, 0].unsqueeze(0)).clamp(min=0)
+            + (env.dof_pos - env.dof_pos_limits[:, 1].unsqueeze(0)).clamp(max=0),
+            dim=1
+        )
     
-        # Total reward
-        reward = forward_velocity_reward + height_reward + orientation_reward + action_smoothness_reward + dof_pos_limit_reward
+        dof_vel_limit = env.dof_vel_limits.unsqueeze(0)
+        dof_vel_penalty = torch.sum(
+            torch.abs(env.dof_vel) - dof_vel_limit * (torch.abs(env.dof_vel) > dof_vel_limit).float(),
+            dim=1
+        )
     
-        # Dictionary of reward components
-        reward_components = {
-            "forward_velocity_reward": forward_velocity_reward,
-            "height_reward": height_reward,
-            "orientation_reward": orientation_reward,
-            "action_smoothness_reward": action_smoothness_reward,
-            "dof_pos_limit_reward": dof_pos_limit_reward
+        # Combine all the rewards
+        total_reward = (
+            forward_velocity_reward
+            + 0.5 * height_reward
+            + 0.5 * orientation_reward
+            + 0.1 * action_smoothness_reward
+            - 0.1 * (dof_pos_penalty + dof_vel_penalty)
+        )
+    
+        # Create a dictionary of each individual reward component
+        reward_dict = {
+            'forward_velocity_reward': forward_velocity_reward,
+            'height_reward': height_reward,
+            'orientation_reward': orientation_reward,
+            'action_smoothness_reward': action_smoothness_reward,
+            'dof_pos_penalty': dof_pos_penalty,
+            'dof_vel_penalty': dof_vel_penalty,
         }
     
-        return reward, reward_components
+        return total_reward, reward_dict
     
     # Success criteria as forward velocity
     def compute_success(self):
