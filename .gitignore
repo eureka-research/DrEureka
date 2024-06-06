@@ -160,3 +160,6 @@ wandb/
 outputs/
 deployment_image.tar
 *.mp4
+
+
+forward_locomotion/runs/

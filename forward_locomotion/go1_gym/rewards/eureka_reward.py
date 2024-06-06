@@ -12,37 +12,42 @@ class EurekaReward():
 
     def compute_reward(self):
         env = self.env  # Do not skip this line. Afterwards, use env.{parameter_name} to access parameters of the environment.
+        
+        # Desired forward velocity
+        desired_velocity = 2.0
     
-        # Extract relevant parameters and metrics
-        base_lin_vel = env.base_lin_vel  # Linear velocity of the torso
-        base_pos_z = env.root_states[:, 2]  # z position of the torso
-        projected_gravity = env.projected_gravity  # Orientation of the torso
-        dof_vel = env.dof_vel  # Velocity of each DOF
-        dof_pos = env.dof_pos  # Position of each DOF
-        last_dof_vel = env.last_dof_vel  # Velocity of each DOF at last time step
-        actions = env.actions  # Actions taken by the agent
-        last_actions = env.last_actions  # Actions taken by the agent at last time step
-        dof_pos_limits = env.dof_pos_limits  # DOF position limits
+        # Reward for maintaining forward velocity
+        forward_velocity_error = torch.abs(env.root_states[:, 7] - desired_velocity)
+        forward_velocity_reward = torch.exp(-forward_velocity_error)
     
-        # Reward components
-        base_vel_reward = -torch.abs(base_lin_vel[:, 0] - 2.0)  # Encourage a forward velocity of 2.0 m/s
-        torso_height_reward = -torch.abs(base_pos_z - 0.34)  # Encourage torso z position to be near 0.34
-        orientation_reward = -torch.norm(projected_gravity[:, [0, 1]], dim=1)  # Minimize deviation from perpendicular to gravity
-        smoothness_reward = -torch.mean((dof_vel - last_dof_vel) ** 2, dim=1)  # Encourage smooth leg movements
-        action_rate_penalty = -torch.mean((actions - last_actions) ** 2, dim=1)  # Penalize high action rates
-        dof_limits_penalty = -torch.sum(torch.maximum(dof_pos - dof_pos_limits[:, 1], torch.tensor(0.0, device=self.device)) + torch.maximum(dof_pos_limits[:, 0] - dof_pos, torch.tensor(0.0, device=self.device)), dim=1)  # Penalize exceeding DOF limits
+        # Reward for maintaining torso height near 0.34
+        torso_height_target = 0.34
+        height_error = torch.abs(env.root_states[:, 2] - torso_height_target)
+        height_reward = torch.exp(-height_error)
+    
+        # Reward for maintaining orientation perpendicular to gravity
+        orientation_reward = torch.exp(-torch.abs(env.projected_gravity[:, 2] - 1.0))
+    
+        # Reward for smoothness in actions
+        action_rate = torch.sum(torch.abs(env.actions - env.last_actions), dim=1)
+        action_smoothness_reward = torch.exp(-action_rate)
+    
+        # Reward for avoiding DOF limits
+        dof_pos_limits_lower = env.dof_pos_limits[:, 0].unsqueeze(0).expand_as(env.dof_pos)
+        dof_pos_limits_upper = env.dof_pos_limits[:, 1].unsqueeze(0).expand_as(env.dof_pos)
+        dof_pos_penalty = torch.sum(torch.clamp(env.dof_pos - dof_pos_limits_upper, min=0) ** 2 + torch.clamp(dof_pos_limits_lower - env.dof_pos, min=0) ** 2, dim=1)
+        dof_pos_limit_reward = torch.exp(-dof_pos_penalty)
     
         # Total reward
-        reward = base_vel_reward + torso_height_reward + orientation_reward + smoothness_reward + action_rate_penalty + dof_limits_penalty
+        reward = forward_velocity_reward + height_reward + orientation_reward + action_smoothness_reward + dof_pos_limit_reward
     
-        # Reward components dictionary
+        # Dictionary of reward components
         reward_components = {
-            "base_vel_reward": base_vel_reward,
-            "torso_height_reward": torso_height_reward,
+            "forward_velocity_reward": forward_velocity_reward,
+            "height_reward": height_reward,
             "orientation_reward": orientation_reward,
-            "smoothness_reward": smoothness_reward,
-            "action_rate_penalty": action_rate_penalty,
-            "dof_limits_penalty": dof_limits_penalty
+            "action_smoothness_reward": action_smoothness_reward,
+            "dof_pos_limit_reward": dof_pos_limit_reward
         }
     
         return reward, reward_components

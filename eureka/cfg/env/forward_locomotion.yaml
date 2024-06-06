@@ -8,5 +8,6 @@ reward_template_file: go1_gym/rewards/eureka_reward_template.py
 reward_output_file: go1_gym/rewards/eureka_reward.py
 
 train_iterations: 1000
+# train_iterations: 20
 success_keyword: running
 failure_keyword: Traceback

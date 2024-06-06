@@ -10,6 +10,9 @@ setup(
     author_email='willjhliang@gmail.com',
     install_requires=[
         "openai==0.28.0",
+        "gpustat",
+        "wandb",
+        "numpy<1.24"
         "hydra-core",
     ]
 )
