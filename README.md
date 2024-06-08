@@ -3,7 +3,7 @@
 <div align="center">
 
 [[Website]](https://eureka-research.github.io/dr-eureka/)
-[[arXiv (coming soon!)]](https://arxiv.org/abs/2310.12931)
+[[arXiv]](https://arxiv.org/abs/2406.01967)
 [[PDF]](https://eureka-research.github.io/dr-eureka/assets/dreureka-paper.pdf)
 
 [Yecheng Jason Ma<sup>1*</sup>](https://jasonma2016.github.io/), [William Liang<sup>1*</sup>](https://willjhliang.github.io), [Hung-Ju Wang<sup>1</sup>](https://www.linkedin.com/in/hungju-wang), [Sam Wang<sup>1</sup>](https://www.linkedin.com/in/sam-wang-penn),<br>
