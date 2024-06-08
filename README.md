@@ -162,7 +162,7 @@ This codebase is released under [MIT License](LICENSE).
 ## Citation
 If you find our work useful, please consider citing us!
 ```bibtex
-@article{ma2024dreureka,
+@inproceedings{ma2024dreureka,
     title   = {DrEureka: Language Model Guided Sim-To-Real Transfer},
     author  = {Yecheng Jason Ma and William Liang and Hungju Wang and Sam Wang and Yuke Zhu and Linxi Fan and Osbert Bastani and Dinesh Jayaraman}
     year    = {2024},
