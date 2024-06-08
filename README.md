@@ -85,7 +85,7 @@ python rapp.py env=forward_locomotion run_path=[YOUR_RUN_DIRECTORY]
 
 This will update the prompt in `dr_eureka/prompts/initial_users/forward_locomotion.txt` with the computed RAPP bounds.
 
-Third, run run DR generation with the new reward and RAPP bounds:
+Third, run DR generation with the new reward and RAPP bounds:
 ```
 python dr_eureka.py env=forward_locomotion
 ```
