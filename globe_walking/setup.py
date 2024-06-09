@@ -11,7 +11,8 @@ setup(
     install_requires=[
         'params-proto==2.10.0',
         'ml-logger==0.8.117',
-        'gym==0.18.0',
+        # 'gym==0.18.0',
+        'gym',
         'tqdm',
         'matplotlib',
         'numpy==1.23.5',
