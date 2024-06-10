@@ -12,59 +12,42 @@ class EurekaReward():
 
     def compute_reward(self):
         env = self.env  # Do not skip this line. Afterwards, use env.{parameter_name} to access parameters of the environment.
-        import torch
+        
+        # Forward velocity reward
+        forward_vel_reward = torch.exp(-torch.abs(env.base_lin_vel[:, 0] - 2.0))
     
-        # Desired forward velocity
-        desired_velocity = 2.0
+        # Height reward (assuming z position is the 2nd element of the position array)
+        height_reward = torch.exp(-torch.abs(env.root_states[:, 2] - 0.34)) * 0.5
+        
+        # Orientation reward (projected gravity should align with the robot's z-axis in local frame)
+        orientation_reward = torch.exp(-torch.norm(env.projected_gravity - env.gravity_vec, dim=-1)) * 0.5
+        
+        # Smooth actions reward (penalizing differences in actions to encourage smoothness)
+        action_smoothness_reward = torch.exp(-torch.norm(env.actions - env.last_actions, dim=-1))
+        
+        # Avoid DOF limits reward (punishing if DOF positions are near limits)
+        dof_limit_penalty = torch.sum(torch.square(env.dof_pos - (env.dof_pos_limits[:, 0] + env.dof_pos_limits[:, 1]) / 2)
+                                      / ((env.dof_pos_limits[:, 1] - env.dof_pos_limits[:, 0]) / 2)**2, dim=-1)
+        dof_limit_reward = torch.exp(-dof_limit_penalty) * 0.3
+        
+        # Episode length penalty to discourage early terminations
+        episode_termination_penalty = torch.ones_like(forward_vel_reward) * -0.1
+        
+        # Weighting of different rewards
+        reward = (3.0 * forward_vel_reward + height_reward + orientation_reward + 
+                  action_smoothness_reward + dof_limit_reward + episode_termination_penalty)
     
-        # Calculate components of the reward
-        # 1. Forward velocity reward
-        forward_velocity = env.root_states[:, 7]  # X-direction linear velocity
-        forward_velocity_reward = -torch.abs(forward_velocity - desired_velocity)
-    
-        # 2. Stability reward (Height and orientation control)
-        target_z_pos = 0.34
-        base_height = env.root_states[:, 2]  # Z position of the torso
-        height_reward = -torch.abs(base_height - target_z_pos)
-    
-        orientation_reward = -torch.abs(env.projected_gravity[:, 2] - 1.0)  # Should be close to 1 if perpendicular to gravity
-    
-        # 3. Penalize high action rate for smoothness
-        action_smoothness_reward = -torch.sum(torch.abs(env.actions - env.last_actions), dim=1)
-    
-        # 4. Penalize DOF limit violations for joint position and velocity
-        dof_pos_penalty = torch.sum(
-            (env.dof_pos - env.dof_pos_limits[:, 0].unsqueeze(0)).clamp(min=0)
-            + (env.dof_pos - env.dof_pos_limits[:, 1].unsqueeze(0)).clamp(max=0),
-            dim=1
-        )
-    
-        dof_vel_limit = env.dof_vel_limits.unsqueeze(0)
-        dof_vel_penalty = torch.sum(
-            torch.abs(env.dof_vel) - dof_vel_limit * (torch.abs(env.dof_vel) > dof_vel_limit).float(),
-            dim=1
-        )
-    
-        # Combine all the rewards
-        total_reward = (
-            forward_velocity_reward
-            + 0.5 * height_reward
-            + 0.5 * orientation_reward
-            + 0.1 * action_smoothness_reward
-            - 0.1 * (dof_pos_penalty + dof_vel_penalty)
-        )
-    
-        # Create a dictionary of each individual reward component
-        reward_dict = {
-            'forward_velocity_reward': forward_velocity_reward,
-            'height_reward': height_reward,
-            'orientation_reward': orientation_reward,
-            'action_smoothness_reward': action_smoothness_reward,
-            'dof_pos_penalty': dof_pos_penalty,
-            'dof_vel_penalty': dof_vel_penalty,
+        # Normalize the reward components to lie between 0 and 1 before summing
+        total_reward = reward.mean(dim=0)
+        
+        return total_reward, {
+            "forward_vel_reward": forward_vel_reward,
+            "height_reward": height_reward,
+            "orientation_reward": orientation_reward,
+            "action_smoothness_reward": action_smoothness_reward,
+            "dof_limit_reward": dof_limit_reward,
+            "episode_termination_penalty": episode_termination_penalty,
         }
-    
-        return total_reward, reward_dict
     
     # Success criteria as forward velocity
     def compute_success(self):

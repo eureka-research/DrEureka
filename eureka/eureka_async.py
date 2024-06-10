@@ -14,11 +14,11 @@ import torch
 import threading
 from utils.misc import * 
 from utils.extract_task_code import *
+import asyncio
 
 EUREKA_ROOT_DIR = os.getcwd()
 ROOT_DIR = f"{EUREKA_ROOT_DIR}/.."
-
-semaphore = threading.Semaphore(2)
+MAX_PROCESSES = 2
 
 @hydra.main(config_path="cfg", config_name="config", version_base="1.1")
 def main(cfg):
@@ -78,40 +78,40 @@ def main(cfg):
 
         logging.info(f"Iteration {iter}: Generating {cfg.sample} samples with {cfg.model}")
 
-        while True:
-            if total_samples >= cfg.sample:
-                break
-            for attempt in range(3):
-                try:
-                    response_cur = openai.ChatCompletion.create(
-                        model=model,
-                        messages=messages,
-                        temperature=cfg.temperature,
-                        n=chunk_size
-                    )
-                    total_samples += chunk_size
-                    break
-                except Exception as e:
-                    if attempt >= 10:
-                        chunk_size = max(int(chunk_size / 2), 1)
-                        print("Current Chunk Size", chunk_size)
-                    logging.info(f"Attempt {attempt+1} failed with error: {e}")
-                    time.sleep(1)
-            if response_cur is None:
-                logging.info("Code terminated due to too many failed attempts!")
-                exit()
+        # while True:
+        #     if total_samples >= cfg.sample:
+        #         break
+        #     for attempt in range(3):
+        #         try:
+        #             response_cur = openai.ChatCompletion.create(
+        #                 model=model,
+        #                 messages=messages,
+        #                 temperature=cfg.temperature,
+        #                 n=chunk_size
+        #             )
+        #             total_samples += chunk_size
+        #             break
+        #         except Exception as e:
+        #             if attempt >= 10:
+        #                 chunk_size = max(int(chunk_size / 2), 1)
+        #                 print("Current Chunk Size", chunk_size)
+        #             logging.info(f"Attempt {attempt+1} failed with error: {e}")
+        #             time.sleep(1)
+        #     if response_cur is None:
+        #         logging.info("Code terminated due to too many failed attempts!")
+        #         exit()
 
-            responses.extend(response_cur["choices"])
-            prompt_tokens = response_cur["usage"]["prompt_tokens"]
-            total_completion_token += response_cur["usage"]["completion_tokens"]
-            total_token += response_cur["usage"]["total_tokens"]
+        #     responses.extend(response_cur["choices"])
+        #     prompt_tokens = response_cur["usage"]["prompt_tokens"]
+        #     total_completion_token += response_cur["usage"]["completion_tokens"]
+        #     total_token += response_cur["usage"]["total_tokens"]
 
-        # # Loading pre-queried reward functions
-        # reward_dir = os.path.join(EUREKA_ROOT_DIR,"saved_rewards")
-        # responses = torch.load(os.path.join(reward_dir,"responses.pt"))
-        # prompt_tokens = torch.load(os.path.join(reward_dir,"prompt_tokens.pt"))
-        # total_completion_token = torch.load(os.path.join(reward_dir,"total_completion_token.pt"))
-        # total_token = torch.load(os.path.join(reward_dir,"total_token.pt"))
+        # Loading pre-queried reward functions
+        reward_dir = os.path.join(EUREKA_ROOT_DIR,"saved_rewards")
+        responses = torch.load(os.path.join(reward_dir,"responses.pt"))
+        prompt_tokens = torch.load(os.path.join(reward_dir,"prompt_tokens.pt"))
+        total_completion_token = torch.load(os.path.join(reward_dir,"total_completion_token.pt"))
+        total_token = torch.load(os.path.join(reward_dir,"total_token.pt"))
 
         if cfg.sample == 1:
             logging.info(f"Iteration {iter}: GPT Output:\n " + responses[0]["message"]["content"] + "\n")
@@ -121,62 +121,75 @@ def main(cfg):
 
         code_runs = [] 
         rl_runs = []
-        for response_id in range(cfg.sample):
-            response_cur = responses[response_id]["message"]["content"]
-            logging.info(f"Iteration {iter}: Processing Code Run {response_id}")
 
-            # Regex patterns to extract python code enclosed in GPT response
-            patterns = [
-                r'```python(.*?)```',
-                r'```(.*?)```',
-                r'"""(.*?)"""',
-                r'""(.*?)""',
-                r'"(.*?)"',
-            ]
-            for pattern in patterns:
-                code_string = re.search(pattern, response_cur, re.DOTALL)
-                if code_string is not None:
-                    code_string = code_string.group(1).strip()
-                    break
-            code_string = response_cur if not code_string else code_string
+        async def train_loop(response_id, sem):
+            async with sem:
+                response_cur = responses[response_id]["message"]["content"]
+                logging.info(f"Iteration {iter}: Processing Code Run {response_id}")
 
-            # Remove unnecessary imports
-            lines = code_string.split("\n")
-            lines = [" "*4 + line for line in lines]
-            for i, line in enumerate(lines):
-                if line.strip().startswith("def "):
-                    code_string = "\n".join(lines[i:])
-                    break
-            
-            code_runs.append(code_string)
-                    
-            # Add the Eureka Reward Signature to the environment code
-            cur_task_rew_code_string = task_rew_code_string.replace("# INSERT EUREKA REWARD HERE", code_string)
+                # Regex patterns to extract python code enclosed in GPT response
+                patterns = [
+                    r'```python(.*?)```',
+                    r'```(.*?)```',
+                    r'"""(.*?)"""',
+                    r'""(.*?)""',
+                    r'"(.*?)"',
+                ]
+                for pattern in patterns:
+                    code_string = re.search(pattern, response_cur, re.DOTALL)
+                    if code_string is not None:
+                        code_string = code_string.group(1).strip()
+                        break
+                code_string = response_cur if not code_string else code_string
 
-            # Save the new environment code when the output contains valid code string!
-            with open(output_file, 'w') as file:
-                file.writelines(cur_task_rew_code_string + '\n')
+                # Remove unnecessary imports
+                lines = code_string.split("\n")
+                lines = [" "*4 + line for line in lines]
+                for i, line in enumerate(lines):
+                    if line.strip().startswith("def "):
+                        code_string = "\n".join(lines[i:])
+                        break
+                
+                code_runs.append(code_string)
+                        
+                # Add the Eureka Reward Signature to the environment code
+                cur_task_rew_code_string = task_rew_code_string.replace("# INSERT EUREKA REWARD HERE", code_string)
 
-            with open(f"env_iter{iter}_response{response_id}_rewardonly.py", 'w') as file:
-                file.writelines(code_string + '\n')
+                # Save the new environment code when the output contains valid code string!
+                with open(output_file, 'w') as file:
+                    file.writelines(cur_task_rew_code_string + '\n')
 
-            # Copy the generated environment code to hydra output directory for bookkeeping
-            shutil.copy(output_file, f"env_iter{iter}_response{response_id}.py")
+                with open(f"env_iter{iter}_response{response_id}_rewardonly.py", 'w') as file:
+                    file.writelines(code_string + '\n')
 
-            # Find the freest GPU to run GPU-accelerated RL
-            set_freest_gpu()
-            
-            # Execute the python file with flags
-            rl_filepath = f"env_iter{iter}_response{response_id}.txt"
-            with open(rl_filepath, 'w') as f:
-                command = f"python -u {ROOT_DIR}/{env_name}/{cfg.env.train_script} --iterations {cfg.env.train_iterations} --dr-config off --reward-config eureka"
-                command = command.split(" ")
-                if not cfg.use_wandb:
-                    command.append("--no-wandb")
-                process = subprocess.run(command, stdout=f, stderr=f)
-            block_until_training(rl_filepath, success_keyword=cfg.env.success_keyword, failure_keyword=cfg.env.failure_keyword,
-                                 log_status=True, iter_num=iter, response_id=response_id)
-            rl_runs.append(process)
+                # Copy the generated environment code to hydra output directory for bookkeeping
+                shutil.copy(output_file, f"env_iter{iter}_response{response_id}.py")
+
+                # Find the freest GPU to run GPU-accelerated RL
+                set_freest_gpu()
+                
+                # Execute the python file with flags
+                rl_filepath = f"env_iter{iter}_response{response_id}.txt"
+                with open(rl_filepath, 'w') as f:
+                    command = f"python -u {ROOT_DIR}/{env_name}/{cfg.env.train_script} --iterations {cfg.env.train_iterations} --dr-config off --reward-config eureka --no-wandb"
+                    # command = command.split(" ")
+                    # if not cfg.use_wandb:
+                    #     command.append("--no-wandb")
+                    # print(command)
+                    process = await asyncio.create_subprocess_shell(command, stdout=f, stderr=f)
+                await process.wait()
+                
+                block_until_training(rl_filepath, success_keyword=cfg.env.success_keyword, failure_keyword=cfg.env.failure_keyword,
+                                    log_status=True, iter_num=iter, response_id=response_id)
+                
+                rl_runs.append(process)
+
+        async def run_training_loops():
+            sem = asyncio.Semaphore(MAX_PROCESSES)
+            await asyncio.gather(*[train_loop(response_id, sem) for response_id in range(cfg.sample)])
+
+
+        asyncio.run(run_training_loops())
 
         # Gather RL training results and construct reward reflection
         code_feedbacks = []
@@ -187,7 +200,7 @@ def main(cfg):
         
         exec_success = False 
         for response_id, (code_run, rl_run) in enumerate(zip(code_runs, rl_runs)):
-            # rl_run.communicate()
+            rl_run.communicate()
             rl_filepath = f"env_iter{iter}_response{response_id}.txt"
             code_paths.append(f"env_iter{iter}_response{response_id}.py")
             try:
