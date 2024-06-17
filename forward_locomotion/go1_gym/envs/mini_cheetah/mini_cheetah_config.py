@@ -1,6 +1,6 @@
 from typing import Union
 
-from params_proto.neo_proto import Meta
+from params_proto import Meta
 
 from forward_locomotion.go1_gym.envs.base.legged_robot_config import Cfg
 

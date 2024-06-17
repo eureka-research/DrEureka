@@ -2,7 +2,7 @@
 
 import torch
 import torch.nn as nn
-from params_proto.neo_proto import PrefixProto
+from params_proto import PrefixProto
 from torch.distributions import Normal
 
 

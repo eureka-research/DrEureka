@@ -1,4 +1,4 @@
-from params_proto.neo_proto import PrefixProto, ParamsProto
+from params_proto import PrefixProto, ParamsProto
 import os
 import random
 

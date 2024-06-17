@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 import numpy as np
-from params_proto.neo_proto import PrefixProto
+from params_proto import PrefixProto
 
 from forward_locomotion.go1_gym_learn.ppo import ActorCritic
 from forward_locomotion.go1_gym_learn.ppo import RolloutStorage
