@@ -78,40 +78,40 @@ def main(cfg):
 
         logging.info(f"Iteration {iter}: Generating {cfg.sample} samples with {cfg.model}")
 
-        while True:
-            if total_samples >= cfg.sample:
-                break
-            for attempt in range(3):
-                try:
-                    response_cur = openai.ChatCompletion.create(
-                        model=model,
-                        messages=messages,
-                        temperature=cfg.temperature,
-                        n=chunk_size
-                    )
-                    total_samples += chunk_size
-                    break
-                except Exception as e:
-                    if attempt >= 10:
-                        chunk_size = max(int(chunk_size / 2), 1)
-                        print("Current Chunk Size", chunk_size)
-                    logging.info(f"Attempt {attempt+1} failed with error: {e}")
-                    time.sleep(1)
-            if response_cur is None:
-                logging.info("Code terminated due to too many failed attempts!")
-                exit()
+        # while True:
+        #     if total_samples >= cfg.sample:
+        #         break
+        #     for attempt in range(3):
+        #         try:
+        #             response_cur = openai.ChatCompletion.create(
+        #                 model=model,
+        #                 messages=messages,
+        #                 temperature=cfg.temperature,
+        #                 n=chunk_size
+        #             )
+        #             total_samples += chunk_size
+        #             break
+        #         except Exception as e:
+        #             if attempt >= 10:
+        #                 chunk_size = max(int(chunk_size / 2), 1)
+        #                 print("Current Chunk Size", chunk_size)
+        #             logging.info(f"Attempt {attempt+1} failed with error: {e}")
+        #             time.sleep(1)
+        #     if response_cur is None:
+        #         logging.info("Code terminated due to too many failed attempts!")
+        #         exit()
 
-            responses.extend(response_cur["choices"])
-            prompt_tokens = response_cur["usage"]["prompt_tokens"]
-            total_completion_token += response_cur["usage"]["completion_tokens"]
-            total_token += response_cur["usage"]["total_tokens"]
+        #     responses.extend(response_cur["choices"])
+        #     prompt_tokens = response_cur["usage"]["prompt_tokens"]
+        #     total_completion_token += response_cur["usage"]["completion_tokens"]
+        #     total_token += response_cur["usage"]["total_tokens"]
 
-        # # Loading pre-queried reward functions
-        # reward_dir = os.path.join(EUREKA_ROOT_DIR,"saved_rewards")
-        # responses = torch.load(os.path.join(reward_dir,"responses.pt"))
-        # prompt_tokens = torch.load(os.path.join(reward_dir,"prompt_tokens.pt"))
-        # total_completion_token = torch.load(os.path.join(reward_dir,"total_completion_token.pt"))
-        # total_token = torch.load(os.path.join(reward_dir,"total_token.pt"))
+        # Loading pre-queried reward functions
+        reward_dir = os.path.join(EUREKA_ROOT_DIR,"saved_rewards")
+        responses = torch.load(os.path.join(reward_dir,"responses.pt"))
+        prompt_tokens = torch.load(os.path.join(reward_dir,"prompt_tokens.pt"))
+        total_completion_token = torch.load(os.path.join(reward_dir,"total_completion_token.pt"))
+        total_token = torch.load(os.path.join(reward_dir,"total_token.pt"))
 
         if cfg.sample == 1:
             logging.info(f"Iteration {iter}: GPT Output:\n " + responses[0]["message"]["content"] + "\n")

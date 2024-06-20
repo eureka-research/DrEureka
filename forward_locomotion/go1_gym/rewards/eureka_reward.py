@@ -12,48 +12,49 @@ class EurekaReward():
 
     def compute_reward(self):
         env = self.env  # Do not skip this line. Afterwards, use env.{parameter_name} to access parameters of the environment.
+        
+        # Desired forward velocity
+        desired_velocity = 2.0
     
-        # Reward for target forward velocity
-        forward_speed_error = torch.abs(env.base_lin_vel[:, 0] - 2.0)
-        reward_forward_speed = torch.exp(-3 * forward_speed_error)  # Increased influence for better precision
+        # Reward for maintaining forward velocity
+        forward_velocity_error = torch.abs(env.root_states[:, 7] - desired_velocity)
+        forward_velocity_reward = torch.exp(-forward_velocity_error)
     
-        # Reward for maintaining torso height close to 0.34m
-        height_error = torch.abs(env.root_states[:, 2] - 0.34)
-        reward_height = torch.exp(-8 * height_error)  # Reduced weight for balance
+        # Reward for maintaining torso height near 0.34
+        torso_height_target = 0.34
+        height_error = torch.abs(env.root_states[:, 2] - torso_height_target)
+        height_reward = torch.exp(-height_error)
     
-        # Reward for maintaining stable orientation
-        orientation_error = torch.norm(env.projected_gravity - env.gravity_vec, dim=1)
-        reward_orientation = torch.exp(-8 * orientation_error)  # Reduced weight for balance
+        # Reward for maintaining orientation perpendicular to gravity
+        orientation_reward = torch.exp(-torch.abs(env.projected_gravity[:, 2] - 1.0))
     
-        # Penalty for excessive actions (action smoothness) - Rewritten
-        action_rate = torch.square(env.actions - env.last_actions).sum(dim=1)
-        reward_action_smoothness = torch.exp(-10 * action_rate)  # Increased scaling factor for relevance
+        # Reward for smoothness in actions
+        action_rate = torch.sum(torch.abs(env.actions - env.last_actions), dim=1)
+        action_smoothness_reward = torch.exp(-action_rate)
     
-        # Penalty for DOF limits violation - Softened further
-        dof_position_penalty = -torch.sum(torch.abs(env.dof_pos - env.default_dof_pos), dim=1) * 0.02
+        # Reward for avoiding DOF limits
+        dof_pos_limits_lower = env.dof_pos_limits[:, 0].unsqueeze(0).expand_as(env.dof_pos)
+        dof_pos_limits_upper = env.dof_pos_limits[:, 1].unsqueeze(0).expand_as(env.dof_pos)
+        dof_pos_penalty = torch.sum(torch.clamp(env.dof_pos - dof_pos_limits_upper, min=0) ** 2 + torch.clamp(dof_pos_limits_lower - env.dof_pos, min=0) ** 2, dim=1)
+        dof_pos_limit_reward = torch.exp(-dof_pos_penalty)
     
         # Total reward
-        total_reward = (2.0 * reward_forward_speed 
-                        + 0.2 * reward_height 
-                        + 0.2 * reward_orientation 
-                        + 0.5 * reward_action_smoothness 
-                        + dof_position_penalty)
+        reward = forward_velocity_reward + height_reward + orientation_reward + action_smoothness_reward + dof_pos_limit_reward
     
-        # Dictionary of each individual reward component
+        # Dictionary of reward components
         reward_components = {
-            'reward_forward_speed': reward_forward_speed,
-            'reward_height': reward_height,
-            'reward_orientation': reward_orientation,
-            'reward_action_smoothness': reward_action_smoothness,
-            'dof_position_penalty': dof_position_penalty
+            "forward_velocity_reward": forward_velocity_reward,
+            "height_reward": height_reward,
+            "orientation_reward": orientation_reward,
+            "action_smoothness_reward": action_smoothness_reward,
+            "dof_pos_limit_reward": dof_pos_limit_reward
         }
     
-        return total_reward, reward_components
+        return reward, reward_components
     
     # Success criteria as forward velocity
     def compute_success(self):
         target_velocity = 2.0
         lin_vel_error = torch.square(target_velocity - self.env.root_states[:, 7])
         return torch.exp(-lin_vel_error / 0.25)
-
 

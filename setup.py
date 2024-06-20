@@ -12,7 +12,7 @@ setup(
         "openai==0.28.0",
         "gpustat",
         "wandb",
-        "numpy<1.24"
+        "numpy<1.24",
         "hydra-core",
     ]
 )
