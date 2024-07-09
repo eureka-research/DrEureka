@@ -13,41 +13,46 @@ class EurekaReward():
     def compute_reward(self):
         env = self.env  # Do not skip this line. Afterwards, use env.{parameter_name} to access parameters of the environment.
         
-        # Desired forward velocity
-        desired_velocity = 2.0
+        # Calculate the velocity reward based on how close the robot's base linear velocity in the x direction is to 2.0 m/s
+        target_velocity = 2.0
+        vel_error = torch.abs(env.base_lin_vel[:, 0] - target_velocity)
+        velocity_reward = 1.0 - vel_error / target_velocity
     
-        # Reward for maintaining forward velocity
-        forward_velocity_error = torch.abs(env.root_states[:, 7] - desired_velocity)
-        forward_velocity_reward = torch.exp(-forward_velocity_error)
-    
-        # Reward for maintaining torso height near 0.34
-        torso_height_target = 0.34
-        height_error = torch.abs(env.root_states[:, 2] - torso_height_target)
-        height_reward = torch.exp(-height_error)
+        # Reward for maintaining torso height near 0.34 meters
+        target_height = 0.34
+        height_error = torch.abs(env.root_states[:, 2] - target_height)
+        height_reward = 1.0 - height_error / target_height
     
         # Reward for maintaining orientation perpendicular to gravity
-        orientation_reward = torch.exp(-torch.abs(env.projected_gravity[:, 2] - 1.0))
+        orientation_reward = -torch.norm(env.projected_gravity[:, :2], dim=1)  # Should be close to zero
     
-        # Reward for smoothness in actions
-        action_rate = torch.sum(torch.abs(env.actions - env.last_actions), dim=1)
-        action_smoothness_reward = torch.exp(-action_rate)
+        # Penalty for high action rates (difference between consecutive actions)
+        action_rate_penalty = torch.sum(torch.abs(env.actions - env.last_actions), dim=1)
     
-        # Reward for avoiding DOF limits
-        dof_pos_limits_lower = env.dof_pos_limits[:, 0].unsqueeze(0).expand_as(env.dof_pos)
-        dof_pos_limits_upper = env.dof_pos_limits[:, 1].unsqueeze(0).expand_as(env.dof_pos)
-        dof_pos_penalty = torch.sum(torch.clamp(env.dof_pos - dof_pos_limits_upper, min=0) ** 2 + torch.clamp(dof_pos_limits_lower - env.dof_pos, min=0) ** 2, dim=1)
-        dof_pos_limit_reward = torch.exp(-dof_pos_penalty)
+        # Penalty for DOF limit violations
+        dof_pos_penalty = torch.sum(torch.abs(env.dof_pos - env.default_dof_pos) > (env.dof_pos_limits[:, 1] - env.dof_pos_limits[:, 0]) * 0.5, dim=1).float()
     
-        # Total reward
-        reward = forward_velocity_reward + height_reward + orientation_reward + action_smoothness_reward + dof_pos_limit_reward
+        # Penalty for high torques to encourage energy efficiency
+        torque_penalty = torch.sum(env.torques ** 2, dim=1)
+        
+        # Combine all reward terms
+        reward = (
+            2.0 * velocity_reward
+            + 0.5 * height_reward
+            + 1.0 * orientation_reward
+            - 0.01 * action_rate_penalty
+            - 0.1 * dof_pos_penalty
+            - 0.001 * torque_penalty
+        )
     
-        # Dictionary of reward components
+        # Returning individual reward components for logging/debugging purposes
         reward_components = {
-            "forward_velocity_reward": forward_velocity_reward,
+            "velocity_reward": velocity_reward,
             "height_reward": height_reward,
             "orientation_reward": orientation_reward,
-            "action_smoothness_reward": action_smoothness_reward,
-            "dof_pos_limit_reward": dof_pos_limit_reward
+            "action_rate_penalty": action_rate_penalty,
+            "dof_pos_penalty": dof_pos_penalty,
+            "torque_penalty": torque_penalty
         }
     
         return reward, reward_components
@@ -57,4 +62,5 @@ class EurekaReward():
         target_velocity = 2.0
         lin_vel_error = torch.square(target_velocity - self.env.root_states[:, 7])
         return torch.exp(-lin_vel_error / 0.25)
+
 

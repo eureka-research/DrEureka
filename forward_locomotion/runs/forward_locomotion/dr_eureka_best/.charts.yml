@@ -1,7 +1,0 @@
-charts: 
-- yKey: train/episode/rew_total/mean
-  xKey: iterations
-- yKey: train/episode/command_area/mean
-  xKey: iterations
-- type: video
-  glob: "videos/*.mp4"
