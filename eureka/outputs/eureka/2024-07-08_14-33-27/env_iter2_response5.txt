@@ -1,0 +1,145 @@
+ML_LOGGER_USER is not set. This is required for online usage.
+creating new logging client...✓ created a new logging client
+Dashboard: http://app.dash.ml/forward_locomotion/2024-07-09/train/062240.435451
+Log_directory: /home/jeffrey/DrEureka/forward_locomotion/runs
+Importing module 'gym_38' (/home/jeffrey/isaacgym/python/isaacgym/_bindings/linux-x86_64/gym_38.so)
+Setting GYM_USD_PLUG_INFO_PATH to /home/jeffrey/isaacgym/python/isaacgym/_bindings/linux-x86_64/usd/plugInfo.json
+PyTorch version 2.3.1+cu118
+Device count 1
+/home/jeffrey/isaacgym/python/isaacgym/_bindings/src/gymtorch
+Using /home/jeffrey/.cache/torch_extensions/py38_cu118 as PyTorch extensions root...
+Emitting ninja build file /home/jeffrey/.cache/torch_extensions/py38_cu118/gymtorch/build.ninja...
+Building extension module gymtorch...
+Allowing ninja to set a default number of workers... (overridable by setting the environment variable MAX_JOBS=N)
+ninja: no work to do.
+Loading extension module gymtorch...
+Running with graphics rendering enabled, this might seg fault on headless compute
+[Warning] [carb.gym.plugin] useGpuPipeline is set, forcing GPU PhysX
+Not connected to PVD
++++ Using GPU PhysX
+Physics Engine: PhysX
+Physics Device: cuda:0
+GPU Pipeline: enabled
+══════════════════════════════════════════
+      AC_Args       
+────────────────────┬─────────────────────
+   init_noise_std   │ 1.0                 
+ actor_hidden_dims  │ [512, 256, 128]     
+ critic_hidden_dims │ [512, 256, 128]     
+     activation     │ elu                 
+adaptation_module_branch_hidden_dims│ [[256, 32]]         
+env_factor_encoder_branch_input_dims│ [18]                
+env_factor_encoder_branch_latent_dims│ [18]                
+env_factor_encoder_branch_hidden_dims│ [[256, 128]]        
+════════════════════╧═════════════════════
+      PPO_Args      
+────────────────────┬─────────────────────
+  value_loss_coef   │ 1.0                 
+use_clipped_value_loss│ True                
+     clip_param     │ 0.2                 
+    entropy_coef    │ 0.01                
+num_learning_epochs │ 5                   
+  num_mini_batches  │ 4                   
+   learning_rate    │ 0.001               
+adaptation_module_learning_rate│ 0.001               
+num_adaptation_module_substeps│ 1                   
+      schedule      │ adaptive            
+       gamma        │ 0.99                
+        lam         │ 0.95                
+     desired_kl     │ 0.01                
+   max_grad_norm    │ 1.0                 
+════════════════════╧═════════════════════
+     RunnerArgs     
+────────────────────┬─────────────────────
+algorithm_class_name│ PPO                 
+ num_steps_per_env  │ 24                  
+   max_iterations   │ 1500                
+   save_interval    │ 400                 
+save_video_interval │ 100                 
+      log_freq      │ 10                  
+       resume       │ False               
+      load_run      │ -1                  
+     checkpoint     │ -1                  
+    resume_path     │ None                
+════════════════════╧═════════════════════
+        Cfg         
+────────────────────┬─────────────────────
+        env         │ <class 'forward_locomotion.go1_gym.envs.base.legged_robot_config.Cfg.env'>
+      terrain       │ <class 'forward_locomotion.go1_gym.envs.base.legged_robot_config.Cfg.terrain'>
+ commands_original  │ <class 'forward_locomotion.go1_gym.envs.base.legged_robot_config.Cfg.commands_original'>
+commands_constrained│ <class 'forward_locomotion.go1_gym.envs.base.legged_robot_config.Cfg.commands_constrained'>
+     init_state     │ <class 'forward_locomotion.go1_gym.envs.base.legged_robot_config.Cfg.init_state'>
+      control       │ <class 'forward_locomotion.go1_gym.envs.base.legged_robot_config.Cfg.control'>
+       asset        │ <class 'forward_locomotion.go1_gym.envs.base.legged_robot_config.Cfg.asset'>
+domain_rand_original│ <class 'forward_locomotion.go1_gym.envs.base.legged_robot_config.Cfg.domain_rand_original'>
+ domain_rand_eureka │ <class 'forward_locomotion.go1_gym.envs.base.legged_robot_config.Cfg.domain_rand_eureka'>
+  domain_rand_off   │ <class 'forward_locomotion.go1_gym.envs.base.legged_robot_config.Cfg.domain_rand_off'>
+  rewards_original  │ <class 'forward_locomotion.go1_gym.envs.base.legged_robot_config.Cfg.rewards_original'>
+   rewards_eureka   │ <class 'forward_locomotion.go1_gym.envs.base.legged_robot_config.Cfg.rewards_eureka'>
+   normalization    │ <class 'forward_locomotion.go1_gym.envs.base.legged_robot_config.Cfg.normalization'>
+       noise        │ <class 'forward_locomotion.go1_gym.envs.base.legged_robot_config.Cfg.noise'>
+       viewer       │ <class 'forward_locomotion.go1_gym.envs.base.legged_robot_config.Cfg.viewer'>
+        sim         │ <class 'forward_locomotion.go1_gym.envs.base.legged_robot_config.Cfg.sim'>
+      commands      │ <class 'forward_locomotion.go1_gym.envs.base.legged_robot_config.Cfg.commands_original'>
+      rewards       │ <class 'forward_locomotion.go1_gym.envs.base.legged_robot_config.Cfg.rewards_eureka'>
+    domain_rand     │ <class 'forward_locomotion.go1_gym.envs.base.legged_robot_config.Cfg.domain_rand_off'>
+   command_ranges   │ {'command_curriculum': False, 'max_reverse_curriculum': 1.0, 'max_forward_curriculum': 1.0, 'forward_curriculum_threshold': 0.8, 'yaw_command_curriculum': False, 'max_yaw_curriculum': 1.0, 'yaw_curriculum_threshold': 0.5, 'num_commands': 4, 'resampling_time': 10.0, 'heading_command': False, 'global_reference': False, 'num_lin_vel_bins': 30, 'lin_vel_step': 0.3, 'num_ang_vel_bins': 30, 'ang_vel_step': 0.3, 'distribution_update_extension_distance': 1, 'curriculum_seed': 100, 'lin_vel_x': [-0.6, 0.6], 'lin_vel_y': [-0.6, 0.6], 'ang_vel_yaw': [-1, 1], 'body_height_cmd': [-0.05, 0.05], 'impulse_height_commands': False, 'limit_vel_x': [-10.0, 10.0], 'limit_vel_y': [-0.6, 0.6], 'limit_vel_yaw': [-10.0, 10.0], 'heading': [-3.14, 3.14]}
+════════════════════╧═════════════════════
+Environment Factor Encoder: Sequential(
+  (0): Linear(in_features=18, out_features=256, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=256, out_features=128, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=128, out_features=18, bias=True)
+)
+Adaptation Module: Sequential(
+  (0): Linear(in_features=585, out_features=256, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=256, out_features=32, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=32, out_features=18, bias=True)
+)
+Actor MLP: Sequential(
+  (0): Linear(in_features=57, out_features=512, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=512, out_features=256, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=256, out_features=128, bias=True)
+  (5): ELU(alpha=1.0)
+  (6): Linear(in_features=128, out_features=12, bias=True)
+)
+Critic MLP: Sequential(
+  (0): Linear(in_features=57, out_features=512, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=512, out_features=256, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=256, out_features=128, bias=True)
+  (5): ELU(alpha=1.0)
+  (6): Linear(in_features=128, out_features=1, bias=True)
+)
+Traceback (most recent call last):
+  File "/home/jeffrey/DrEureka/eureka/../forward_locomotion/scripts/train.py", line 119, in <module>
+    train_mc(iterations=args.iterations, command_config=args.command_config, reward_config=args.reward_config, dr_config=args.dr_config, eureka_target_velocity=args.eureka_target_velocity,
+  File "/home/jeffrey/DrEureka/eureka/../forward_locomotion/scripts/train.py", line 84, in train_mc
+    runner.learn(num_learning_iterations=iterations, init_at_random_ep_len=True, eval_freq=100)
+  File "/home/jeffrey/DrEureka/forward_locomotion/go1_gym_learn/ppo/__init__.py", line 208, in learn
+    mean_value_loss, mean_surrogate_loss, mean_adaptation_module_loss = self.alg.update()
+  File "/home/jeffrey/DrEureka/forward_locomotion/go1_gym_learn/ppo/ppo.py", line 102, in update
+    self.actor_critic.act(obs_batch, privileged_obs_batch, masks=masks_batch)
+  File "/home/jeffrey/DrEureka/forward_locomotion/go1_gym_learn/ppo/actor_critic.py", line 143, in act
+    self.update_distribution(observations, privileged_observations)
+  File "/home/jeffrey/DrEureka/forward_locomotion/go1_gym_learn/ppo/actor_critic.py", line 140, in update_distribution
+    self.distribution = Normal(mean, mean * 0. + self.std)
+  File "/home/jeffrey/anaconda3/envs/dr_eureka/lib/python3.8/site-packages/torch/distributions/normal.py", line 56, in __init__
+    super().__init__(batch_shape, validate_args=validate_args)
+  File "/home/jeffrey/anaconda3/envs/dr_eureka/lib/python3.8/site-packages/torch/distributions/distribution.py", line 68, in __init__
+    raise ValueError(
+ValueError: Expected parameter loc (Tensor of shape (24000, 12)) of distribution Normal(loc: torch.Size([24000, 12]), scale: torch.Size([24000, 12])) to satisfy the constraint Real(), but found invalid values:
+tensor([[nan, nan, nan,  ..., nan, nan, nan],
+        [nan, nan, nan,  ..., nan, nan, nan],
+        [nan, nan, nan,  ..., nan, nan, nan],
+        ...,
+        [nan, nan, nan,  ..., nan, nan, nan],
+        [nan, nan, nan,  ..., nan, nan, nan],
+        [nan, nan, nan,  ..., nan, nan, nan]], device='cuda:0',
+       grad_fn=<AddmmBackward0>)

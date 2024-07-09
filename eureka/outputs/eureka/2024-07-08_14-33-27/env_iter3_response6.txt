@@ -1,0 +1,37 @@
+ML_LOGGER_USER is not set. This is required for online usage.
+creating new logging client...✓ created a new logging client
+Dashboard: http://app.dash.ml/forward_locomotion/2024-07-09/train/092443.404817
+Log_directory: /home/jeffrey/DrEureka/forward_locomotion/runs
+Importing module 'gym_38' (/home/jeffrey/isaacgym/python/isaacgym/_bindings/linux-x86_64/gym_38.so)
+Setting GYM_USD_PLUG_INFO_PATH to /home/jeffrey/isaacgym/python/isaacgym/_bindings/linux-x86_64/usd/plugInfo.json
+PyTorch version 2.3.1+cu118
+Device count 1
+/home/jeffrey/isaacgym/python/isaacgym/_bindings/src/gymtorch
+Using /home/jeffrey/.cache/torch_extensions/py38_cu118 as PyTorch extensions root...
+Emitting ninja build file /home/jeffrey/.cache/torch_extensions/py38_cu118/gymtorch/build.ninja...
+Building extension module gymtorch...
+Allowing ninja to set a default number of workers... (overridable by setting the environment variable MAX_JOBS=N)
+ninja: no work to do.
+Loading extension module gymtorch...
+Running with graphics rendering enabled, this might seg fault on headless compute
+[Warning] [carb.gym.plugin] useGpuPipeline is set, forcing GPU PhysX
+Not connected to PVD
++++ Using GPU PhysX
+Physics Engine: PhysX
+Physics Device: cuda:0
+GPU Pipeline: enabled
+Traceback (most recent call last):
+  File "/home/jeffrey/DrEureka/eureka/../forward_locomotion/scripts/train.py", line 119, in <module>
+    train_mc(iterations=args.iterations, command_config=args.command_config, reward_config=args.reward_config, dr_config=args.dr_config, eureka_target_velocity=args.eureka_target_velocity,
+  File "/home/jeffrey/DrEureka/eureka/../forward_locomotion/scripts/train.py", line 60, in train_mc
+    env = VelocityTrackingEasyEnv(sim_device='cuda:0', headless=headless, cfg=Cfg)
+  File "/home/jeffrey/DrEureka/forward_locomotion/go1_gym/envs/mini_cheetah/velocity_tracking/velocity_tracking_easy_env.py", line 40, in __init__
+    super().__init__(cfg, sim_params, physics_engine, sim_device, headless, eval_cfg, initial_dynamics_dict)
+  File "/home/jeffrey/DrEureka/forward_locomotion/go1_gym/envs/base/legged_robot.py", line 52, in __init__
+    self._prepare_reward_function()
+  File "/home/jeffrey/DrEureka/forward_locomotion/go1_gym/envs/base/legged_robot.py", line 1136, in _prepare_reward_function
+    from forward_locomotion.go1_gym.rewards.eureka_reward import EurekaReward
+  File "/home/jeffrey/DrEureka/forward_locomotion/go1_gym/rewards/eureka_reward.py", line 13
+    Fiscal FOBPens)...
+           ^
+SyntaxError: invalid syntax
