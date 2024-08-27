@@ -1,6 +1,6 @@
 from isaacgym import gymutil, gymapi
 import torch
-from params_proto.neo_proto import Meta
+from params_proto import Meta
 from typing import Union
 
 from forward_locomotion.go1_gym.envs.base.legged_robot import LeggedRobot
@@ -35,6 +35,7 @@ class VelocityTrackingEasyEnv(LeggedRobot):
             cfg.commands.heading_command = False
 
         sim_params = gymapi.SimParams()
+        cfg.sim.physx = vars(cfg.sim.physx)
         gymutil.parse_sim_config(vars(cfg.sim), sim_params)
         super().__init__(cfg, sim_params, physics_engine, sim_device, headless, eval_cfg, initial_dynamics_dict)
 
