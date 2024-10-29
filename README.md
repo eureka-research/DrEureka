@@ -34,37 +34,57 @@ This repository contains code for DrEureka's reward generation, RAPP, and domain
 
 The following instructions will install everything under one Conda environment. We have tested on Ubuntu 20.04.
 
-1. Create a new Conda environment with:
-    ```
+
+1. Clone the repository and create a new Conda environment with:
+    ```bash
+    git clone https://github.com/eureka-research/DrEureka.git
+    cd DrEureka
     conda create -n dr_eureka python=3.8
     conda activate dr_eureka
     ```
+
 2. Install Pytorch with CUDA:
-    ```
+    ```bash
     pip3 install torch==1.10.0+cu113 torchvision==0.11.1+cu113 torchaudio==0.10.0+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
     ```
+
 3. Install IsaacGym, the simulator for forward locomotion and globe walking:
     1. Download and install IsaacGym from NVIDIA: https://developer.nvidia.com/isaac-gym.
+
+    > Note: we have tested on IsaacGym Preview 4, which is legacy software now. According to [NVIDIA](https://developer.nvidia.com/isaac-gym/download), developers may download and continue to use it, but it is no longer supported. For future development, please consider using Isaac Lab, an open-source lightweight and performance optimized application for robot learning built on the Isaac Sim platform.
+
     2. Unzip the file:
-        ```
+        ```bash
         tar -xf IsaacGym_Preview_4_Package.tar.gz
         ```
     3. Install the python package:
-        ```
+        ```bash
         cd isaacgym/python
         pip install -e .
         ```
+
 4. Install DrEureka:
+    ```bash
+    cd {path/to/DrEureka}  # go to the root directory
+    pip install -e . # install DrEureka as a python package
     ```
-    cd dr_eureka
-    pip install -e .
-    ```
+
 5. Install the forward locomotion and globe walking environments:
-    ```
+    ```bash
     cd forward_locomotion
     pip install -e .
     cd ../globe_walking
     pip install -e .
+    ```
+
+6. Set the OpenAI API key:
+    One time setup:
+    ```bash
+    export OPENAI_API_KEY=[YOUR_API_KEY]
+    ```
+    If you are using bash, you can store the above line to your `~/.bashrc` file.
+    ```bash
+    echo "export OPENAI_API_KEY=[YOUR_API_KEY]" >> ~/.bashrc
     ```
 
 ## Usage
